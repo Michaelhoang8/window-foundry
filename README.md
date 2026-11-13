@@ -4,6 +4,8 @@ A persistent event-time analytics workbench. Ingest out-of-order events into fix
 
 ![Window Foundry workbench](docs/workbench.png)
 
+The main workspace centers on the watermark and window ledger. Ingest events opens a dialog for individual events, atomic batches, and retry receipts. Filters, aggregate inspection, and projection checks remain beside the ledger.
+
 ## Run
 
 Python 3.10+ and a modern browser are sufficient. No Python dependencies or external services are required. Node 22+ is used only for the JavaScript syntax check.

@@ -9,16 +9,11 @@
   </head>
   <body>
     <header>
-      <a href="/">window<span>foundry</span><i aria-hidden="true">▥</i></a
-      ><span class="caption">Event-time analytics / local SQLite</span
-      ><button id="refresh">Refresh</button>
+      <h1>Window Foundry</h1>
+      <button id="refresh">Refresh</button>
     </header>
     <main>
       <div class="page-title">
-        <div>
-          <p class="eyebrow">Arrivals are messy. Time can be precise.</p>
-          <h1>Make room for the late ones.</h1>
-        </div>
         <label
           >Active stream<select id="stream">
             <option value="">Choose a stream</option>
@@ -27,11 +22,7 @@
       </div>
       <p id="status" role="status" aria-live="polite"></p>
       <div id="empty" class="empty">
-        <h2>Start with a small stream.</h2>
-        <p>
-          Watch out-of-order events settle into fixed windows. Advance the
-          watermark to close them, then see which late arrivals still count.
-        </p>
+        <h2>No streams</h2>
         <button id="demo" class="primary">Create example stream</button>
       </div>
       <details id="create-details">
@@ -77,7 +68,7 @@
                 min="0"
                 max="1099511627776"
                 required /></label
-            ><button class="primary">Advance watermark →</button>
+            ><button class="primary">Advance watermark</button>
           </form>
         </div>
         <p class="hint">
@@ -86,71 +77,10 @@
           stream provides a fresh experiment.
         </p>
         <div class="layout">
-          <aside>
-            <h2>Event desk</h2>
-            <form id="event-form">
-              <label
-                >Event ID<input id="event-id" required maxlength="64" /></label
-              ><label
-                >Key<input id="event-key" value="north" required maxlength="64"
-              /></label>
-              <div class="pair">
-                <label
-                  >Event time / seconds<input
-                    id="event-time"
-                    type="number"
-                    min="0"
-                    max="1099511627776"
-                    value="15"
-                    required /></label
-                ><label
-                  >Value<input
-                    id="event-value"
-                    type="number"
-                    min="-1000000000"
-                    max="1000000000"
-                    value="8"
-                    step="any"
-                    required
-                /></label>
-              </div>
-              <button class="primary">Ingest event ↗</button>
-            </form>
-            <button id="retry" disabled>Retry last batch</button>
-            <p class="hint">
-              The same ID and payload return the original receipt. Reusing an ID
-              with a different payload rejects the entire batch.
-            </p>
-            <details>
-              <summary>Atomic JSON batch</summary>
-              <p class="hint">
-                An array of up to 200 objects with id, key, time, and value.
-                Imported files are staged for review before ingestion.
-              </p>
-              <textarea
-                id="batch"
-                rows="8"
-                spellcheck="false"
-                maxlength="63000"
-              >
-[{"id":"batch-1","key":"south","time":75,"value":12}]</textarea
-              >
-              <div class="actions">
-                <button id="open-batch">Open JSON</button
-                ><button id="send-batch">Ingest batch</button>
-              </div>
-              <input
-                id="file"
-                type="file"
-                accept=".json,application/json"
-                hidden
-              />
-            </details>
-            <p id="receipt" role="status" class="receipt"></p>
-          </aside>
           <div class="analysis">
             <div class="section-title">
               <h2>Window ledger</h2>
+              <button id="event-open" class="primary">Ingest events</button>
               <span id="revision"></span>
             </div>
             <div id="counts" class="counts"></div>
@@ -201,14 +131,65 @@
       </section>
       <footer>
         <p>
-          Fixed, half-open windows. Explicit event-time watermarks. Durable
-          receipts.
-        </p>
-        <p>
           Local development service · No authentication · No distributed
           processing or wall-clock automation
         </p>
       </footer>
     </main>
+    <dialog id="event-dialog" aria-labelledby="event-title">
+      <div class="dialog-head">
+        <h2 id="event-title">Ingest events</h2>
+        <button id="event-close">Close</button>
+      </div>
+      <p id="event-status" role="status"></p>
+      <form id="event-form">
+        <label>Event ID<input id="event-id" required maxlength="64" /></label
+        ><label
+          >Key<input id="event-key" value="north" required maxlength="64"
+        /></label>
+        <div class="pair">
+          <label
+            >Event time / seconds<input
+              id="event-time"
+              type="number"
+              min="0"
+              max="1099511627776"
+              value="15"
+              required /></label
+          ><label
+            >Value<input
+              id="event-value"
+              type="number"
+              min="-1000000000"
+              max="1000000000"
+              value="8"
+              step="any"
+              required
+          /></label>
+        </div>
+        <button class="primary">Ingest event</button>
+      </form>
+      <button id="retry" disabled>Retry last batch</button>
+      <p class="hint">
+        The same ID and payload return the original receipt. Reusing an ID with
+        a different payload rejects the entire batch.
+      </p>
+      <details>
+        <summary>Atomic JSON batch</summary>
+        <p class="hint">
+          An array of up to 200 objects with id, key, time, and value. Imported
+          files are staged for review before ingestion.
+        </p>
+        <textarea id="batch" rows="8" spellcheck="false" maxlength="63000">
+[{"id":"batch-1","key":"south","time":75,"value":12}]</textarea
+        >
+        <div class="actions">
+          <button id="open-batch">Open JSON</button
+          ><button id="send-batch">Ingest batch</button>
+        </div>
+        <input id="file" type="file" accept=".json,application/json" hidden />
+      </details>
+      <p id="receipt" role="status" class="receipt"></p>
+    </dialog>
   </body>
 </html>

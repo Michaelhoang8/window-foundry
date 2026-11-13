@@ -47,6 +47,7 @@ async function task(fn) {
     });
     $("retry").disabled = !lastBatch;
     paginateButtons();
+    $("event-status").textContent = $("status").textContent;
   }
 }
 function nextID() {
@@ -406,3 +407,9 @@ $("file").addEventListener("change", () =>
 );
 nextID();
 task(refresh);
+
+$("event-open").addEventListener("click", () => {
+  $("event-status").textContent = "";
+  $("event-dialog").showModal();
+});
+$("event-close").addEventListener("click", () => $("event-dialog").close());
