@@ -1,0 +1,145 @@
+{
+  "format": "window-foundry-log-v1",
+  "stream": {
+    "name": "example-1794556142803",
+    "width": 60,
+    "lateness": 30,
+    "watermark": 90,
+    "revision": 6
+  },
+  "events": [
+    {
+      "sequence": 1,
+      "event_id": "arrival-1",
+      "key": "north",
+      "time": 10,
+      "value": 12,
+      "start": 0,
+      "disposition": "on-time",
+      "watermark": 0,
+      "revision": 1
+    },
+    {
+      "sequence": 2,
+      "event_id": "arrival-2",
+      "key": "south",
+      "time": 35,
+      "value": 7,
+      "start": 0,
+      "disposition": "on-time",
+      "watermark": 0,
+      "revision": 1
+    },
+    {
+      "sequence": 3,
+      "event_id": "arrival-3",
+      "key": "north",
+      "time": 65,
+      "value": 18,
+      "start": 60,
+      "disposition": "on-time",
+      "watermark": 0,
+      "revision": 1
+    },
+    {
+      "sequence": 4,
+      "event_id": "arrival-4",
+      "key": "south",
+      "time": 82,
+      "value": 9,
+      "start": 60,
+      "disposition": "on-time",
+      "watermark": 0,
+      "revision": 1
+    },
+    {
+      "sequence": 5,
+      "event_id": "arrival-5",
+      "key": "north",
+      "time": 122,
+      "value": 15,
+      "start": 120,
+      "disposition": "on-time",
+      "watermark": 0,
+      "revision": 1
+    },
+    {
+      "sequence": 6,
+      "event_id": "arrival-6",
+      "key": "south",
+      "time": 176,
+      "value": 11,
+      "start": 120,
+      "disposition": "on-time",
+      "watermark": 0,
+      "revision": 1
+    },
+    {
+      "sequence": 7,
+      "event_id": "late-north",
+      "key": "north",
+      "time": 15,
+      "value": 8,
+      "start": 0,
+      "disposition": "late",
+      "watermark": 60,
+      "revision": 3
+    },
+    {
+      "sequence": 8,
+      "event_id": "expired-north",
+      "key": "north",
+      "time": 15,
+      "value": 8,
+      "start": 0,
+      "disposition": "expired",
+      "watermark": 90,
+      "revision": 5
+    },
+    {
+      "sequence": 9,
+      "event_id": "import-late",
+      "key": "south",
+      "time": 75,
+      "value": 12,
+      "start": 60,
+      "disposition": "late",
+      "watermark": 90,
+      "revision": 6
+    },
+    {
+      "sequence": 10,
+      "event_id": "import-expired",
+      "key": "north",
+      "time": 59,
+      "value": 100,
+      "start": 0,
+      "disposition": "expired",
+      "watermark": 90,
+      "revision": 6
+    },
+    {
+      "sequence": 11,
+      "event_id": "import-future",
+      "key": "north",
+      "time": 200,
+      "value": 6,
+      "start": 180,
+      "disposition": "on-time",
+      "watermark": 90,
+      "revision": 6
+    }
+  ],
+  "watermarks": [
+    {
+      "previous": 0,
+      "watermark": 60,
+      "revision": 2
+    },
+    {
+      "previous": 60,
+      "watermark": 90,
+      "revision": 4
+    }
+  ]
+}

@@ -1,0 +1,214 @@
+<!doctype html>
+<html lang="en">
+  <head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width,initial-scale=1" />
+    <title>Window Foundry · Event-time analytics</title>
+    <link rel="stylesheet" href="style.css" />
+    <script defer src="app.js"></script>
+  </head>
+  <body>
+    <header>
+      <a href="/">window<span>foundry</span><i aria-hidden="true">▥</i></a
+      ><span class="caption">Event-time analytics / local SQLite</span
+      ><button id="refresh">Refresh</button>
+    </header>
+    <main>
+      <div class="page-title">
+        <div>
+          <p class="eyebrow">Arrivals are messy. Time can be precise.</p>
+          <h1>Make room for the late ones.</h1>
+        </div>
+        <label
+          >Active stream<select id="stream">
+            <option value="">Choose a stream</option>
+          </select></label
+        >
+      </div>
+      <p id="status" role="status" aria-live="polite"></p>
+      <div id="empty" class="empty">
+        <h2>Start with a small stream.</h2>
+        <p>
+          Watch out-of-order events settle into fixed windows. Advance the
+          watermark to close them, then see which late arrivals still count.
+        </p>
+        <button id="demo" class="primary">Create example stream</button>
+      </div>
+      <details id="create-details">
+        <summary>Create a stream</summary>
+        <form id="create-form" class="inline-form">
+          <label
+            >Name<input
+              id="name"
+              required
+              maxlength="64"
+              value="sensor-readings" /></label
+          ><label
+            >Window width / seconds<input
+              id="width"
+              type="number"
+              min="1"
+              max="3600"
+              value="60"
+              required /></label
+          ><label
+            >Allowed lateness / seconds<input
+              id="lateness"
+              type="number"
+              min="0"
+              max="3600"
+              value="30"
+              required /></label
+          ><button class="primary">Create stream</button>
+        </form>
+      </details>
+      <section id="workspace" hidden>
+        <div class="watermark">
+          <div>
+            <p class="eyebrow">Watermark</p>
+            <strong id="watermark-value">0 s</strong>
+            <p id="config"></p>
+          </div>
+          <form id="watermark-form">
+            <label
+              >Advance to / seconds<input
+                id="watermark-input"
+                type="number"
+                min="0"
+                max="1099511627776"
+                required /></label
+            ><button class="primary">Advance watermark →</button>
+          </form>
+        </div>
+        <p class="hint">
+          Watermarks are explicit and irreversible within a stream. A window
+          becomes final when watermark ≥ window end + allowed lateness. A new
+          stream provides a fresh experiment.
+        </p>
+        <div class="layout">
+          <aside>
+            <h2>Event desk</h2>
+            <form id="event-form">
+              <label
+                >Event ID<input id="event-id" required maxlength="64" /></label
+              ><label
+                >Key<input id="event-key" value="north" required maxlength="64"
+              /></label>
+              <div class="pair">
+                <label
+                  >Event time / seconds<input
+                    id="event-time"
+                    type="number"
+                    min="0"
+                    max="1099511627776"
+                    value="15"
+                    required /></label
+                ><label
+                  >Value<input
+                    id="event-value"
+                    type="number"
+                    min="-1000000000"
+                    max="1000000000"
+                    value="8"
+                    step="any"
+                    required
+                /></label>
+              </div>
+              <button class="primary">Ingest event ↗</button>
+            </form>
+            <button id="retry" disabled>Retry last batch</button>
+            <p class="hint">
+              The same ID and payload return the original receipt. Reusing an ID
+              with a different payload rejects the entire batch.
+            </p>
+            <details>
+              <summary>Atomic JSON batch</summary>
+              <p class="hint">
+                An array of up to 200 objects with id, key, time, and value.
+                Imported files are staged for review before ingestion.
+              </p>
+              <textarea
+                id="batch"
+                rows="8"
+                spellcheck="false"
+                maxlength="63000"
+              >
+[{"id":"batch-1","key":"south","time":75,"value":12}]</textarea
+              >
+              <div class="actions">
+                <button id="open-batch">Open JSON</button
+                ><button id="send-batch">Ingest batch</button>
+              </div>
+              <input
+                id="file"
+                type="file"
+                accept=".json,application/json"
+                hidden
+              />
+            </details>
+            <p id="receipt" role="status" class="receipt"></p>
+          </aside>
+          <div class="analysis">
+            <div class="section-title">
+              <h2>Window ledger</h2>
+              <span id="revision"></span>
+            </div>
+            <div id="counts" class="counts"></div>
+            <div class="filters">
+              <label
+                >Filter by key<input
+                  id="filter"
+                  placeholder="Any key"
+                  maxlength="64" /></label
+              ><label
+                >Window state<select id="state-filter">
+                  <option value="all">All states</option>
+                  <option value="open">Open</option>
+                  <option value="grace">Grace</option>
+                  <option value="final">Final</option>
+                </select></label
+              ><span id="window-count"></span>
+            </div>
+            <div id="windows" class="scroll"></div>
+            <div class="pagination">
+              <button id="prev">← Previous</button><span id="page"></span
+              ><button id="next">Next →</button>
+            </div>
+            <div id="selection" class="selection" hidden></div>
+            <details>
+              <summary>Recent arrival receipts <span>last 50</span></summary>
+              <div id="recent" class="scroll"></div>
+            </details>
+            <details>
+              <summary>Projection integrity</summary>
+              <p class="hint">
+                Recompute aggregates from durable accepted receipts. Repair only
+                replaces the derived window table; it preserves event receipts
+                and watermark history.
+              </p>
+              <div class="actions">
+                <button id="audit">Check projection</button
+                ><button id="repair">Rebuild projection</button>
+              </div>
+              <p id="audit-result" role="status"></p>
+            </details>
+            <div class="actions exports">
+              <button id="export">Export full event log</button
+              ><button id="export-windows">Export window CSV</button>
+            </div>
+          </div>
+        </div>
+      </section>
+      <footer>
+        <p>
+          Fixed, half-open windows. Explicit event-time watermarks. Durable
+          receipts.
+        </p>
+        <p>
+          Local development service · No authentication · No distributed
+          processing or wall-clock automation
+        </p>
+      </footer>
+    </main>
+  </body>
+</html>
